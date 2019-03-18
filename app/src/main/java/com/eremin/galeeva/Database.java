@@ -43,7 +43,7 @@ public class Database {
         if(lastIn == null) {
             cv.put(IN, time);
         } else cv.put(OUT, time);
-        db.update(DbName, cv, "id = ?", new String[] {String.valueOf(id)});
+        db.update(DbName, cv, "id=" + 1.0, new String[] {String.valueOf(id)});
     }
 
     public String getCurrentTimeUsingCalendar() {
@@ -69,9 +69,9 @@ public class Database {
     public void readDb(String id) {
         Cursor c;
         try {
-            c = db.query(DbName, null, "id=?", new String[] {id}, null, null, null);
+            c = db.query(DbName, null, "id=" + "1.0", null, null, null, null);
         } catch (SQLiteException e) {
-            Toast.makeText(context, "Заполните базу!", Toast.LENGTH_LONG);
+            Toast.makeText(context, "Заполните базу!", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -92,7 +92,7 @@ public class Database {
         c.close();
     }
 
-    public void upradeTable() {
+    public void upgradeTable() {
         dbHelper.onUpgrade(db, 0, 1);
     }
 

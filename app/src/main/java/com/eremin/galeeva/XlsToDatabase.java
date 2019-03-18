@@ -2,7 +2,6 @@ package com.eremin.galeeva;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.widget.Toast;
 
@@ -58,6 +57,6 @@ public class XlsToDatabase {
 
     private void updateDatabase() {
         Database database = new Database(context);
-        database.upradeTable();
+        database.upgradeTable();
     }
 }
