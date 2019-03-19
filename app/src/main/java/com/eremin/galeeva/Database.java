@@ -23,6 +23,7 @@ public class Database {
     public static final String IN = "come_in";
     public static final String OUT = "come_out";
 
+    private String name;
     private String lastIn;
     private String lastOut;
 
@@ -37,13 +38,15 @@ public class Database {
     }
 
     public void updateLastInto(int id) {
-        readDb(String.valueOf(id));
-        ContentValues cv = new ContentValues();
-        String time = getCurrentTimeUsingCalendar();
-        if(lastIn == null) {
-            cv.put(IN, time);
-        } else cv.put(OUT, time);
-        db.update(DbName, cv, "id=" + 1.0, new String[] {String.valueOf(id)});
+        boolean isCreateDb = readDb(id);
+        if(isCreateDb) {
+            ContentValues cv = new ContentValues();
+            String time = getCurrentTimeUsingCalendar();
+            if (lastIn == null) {
+                cv.put(IN, time);
+            } else cv.put(OUT, time);
+            db.update(DbName, cv, "id=" + id + ".0", null);
+        }
     }
 
     public String getCurrentTimeUsingCalendar() {
@@ -51,7 +54,6 @@ public class Database {
         Date date=cal.getTime();
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         return dateFormat.format(date);
-        //System.out.println("Current time of the day using Calendar - 24 hour format: "+ formattedDate);
     }
 
     public void insertIntoDatabase() {
@@ -66,13 +68,13 @@ public class Database {
         //readDb();
     }
 
-    public void readDb(String id) {
+    public boolean readDb(int id) {
         Cursor c;
         try {
-            c = db.query(DbName, null, "id=" + "1.0", null, null, null, null);
+            c = db.query(DbName, null, "id=" + id + ".0", null, null, null, null);
         } catch (SQLiteException e) {
             Toast.makeText(context, "Заполните базу!", Toast.LENGTH_LONG).show();
-            return;
+            return false;
         }
 
         // ставим позицию курсора на первую строку выборки
@@ -80,16 +82,23 @@ public class Database {
         if (c.moveToFirst()) {
 
             // определяем номера столбцов по имени в выборке
+            int nameColIndex = c.getColumnIndex("name");
             int inColIndex = c.getColumnIndex("come_in");
             int outColIndex = c.getColumnIndex("come_out");
 
             do {
+                name = c.getString(nameColIndex);
                 lastIn = c.getString(inColIndex);
                 lastOut = c.getString(outColIndex);
             } while (c.moveToNext());
         } else
             Log.d(LOG_TAG, "0 rows");
         c.close();
+        return true;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void upgradeTable() {
@@ -107,13 +116,13 @@ public class Database {
         public void onCreate(SQLiteDatabase db) {
             Log.d(DbName, "--- onCreate database ---");
             // создаем таблицу с полями
-            db.execSQL("create table Dantists ("
+            /*db.execSQL("create table Dantists ("
                     + "id integer primary key autoincrement,"
                     + "name text,"
                     + "email text,"
                     + "number text,"
                     + "income date,"
-                    + "outcome date);");
+                    + "outcome date);");*/
         }
 
         @Override

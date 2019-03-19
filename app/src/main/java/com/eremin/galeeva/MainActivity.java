@@ -7,11 +7,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.zxing.Result;
 
@@ -20,7 +18,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler{
     private ZXingScannerView mScannerView;
     private static final String TAG = "result";
-    Database database;
+    //Database database;
     int countOfTouches = 0;
 
     @Override
@@ -28,10 +26,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mScannerView = new ZXingScannerView(this);
-        checkPermission();
+        checkPermissionCamera();
+        checkPermissionData();
         LinearLayout lr = findViewById(R.id.camera);
         lr.addView(mScannerView);
-        database = new Database(this);
+        //database = new Database(this);
     }
 
     @Override
@@ -50,17 +49,19 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
 
 
-    private void checkPermission() {
+    private void checkPermissionCamera() {
         int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if(permission == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
-                    1);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
+    }
 
+    private void checkPermissionData() {
         int permissionData = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(permissionData == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    2);
+                    1);
         }
     }
 
@@ -82,5 +83,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Database database = new Database(this);
         database.updateLastInto(Integer.parseInt(rawResult.getText()));
         mScannerView.resumeCameraPreview(this);
+        Toast.makeText(this, database.getName() + " пожалуйста проходите!", Toast.LENGTH_LONG).show();
     }
 }
